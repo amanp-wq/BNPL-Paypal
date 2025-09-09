@@ -316,36 +316,41 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const programSelect = document.getElementById('program');
-            const pricingInput = document.getElementById('pricing');
-            const form = document.getElementById('program-form');
+    document.addEventListener('DOMContentLoaded', function() {
+        const pricingInput = document.getElementById('pricing');
+        const form = document.getElementById('program-form');
 
-            // PayPal Button Integration
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: pricingInput.value // Use entered value as amount
-                            }
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        alert('Transaction completed by ' + details.payer.name.given_name);
-                        // Redirect to confirmation or success page
-                        window.location.href = "/confirmation"; // Example redirection
-                    });
-                }
-            }).render('#paypal-button-container'); // Render the button
+        // PayPal Button Integration
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: pricingInput.value // Use entered value as amount
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
 
-            // Prevent form submit
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Disable the default form submission
-            });
+                    // Redirect to confirmation or success page after successful payment
+                    window.location.replace("confirmation.html");  // Replace with your actual confirmation page URL
+                });
+            },
+            onError: function(err) {
+                console.error('Payment Error:', err);
+                alert('There was an issue with the payment. Please try again.');
+            }
+        }).render('#paypal-button-container'); // Render the PayPal button
+
+        // Prevent form submit
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Disable the default form submission
         });
-    </script>
+    });
+</script>
 </body>
 </html>
+
